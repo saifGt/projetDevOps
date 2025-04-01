@@ -30,5 +30,6 @@ pipeline {
                 sh 'mvn install -DskipTests'
             }
         }
+    }
 
     }
