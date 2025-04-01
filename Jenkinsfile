@@ -25,11 +25,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'mvn install -DskipTests'
-            }
-        }
+      
     }
 
     }
