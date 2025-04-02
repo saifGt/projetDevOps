@@ -60,7 +60,7 @@ public class SubscriptionServicesImpl implements ISubscriptionServices{
     }
 
     @Override
-    @Scheduled(cron = "*/30 * * * * *") /* Cron expression to run a job every 30 secondes */
+    //@Scheduled(cron = "*/30 * * * * *") /* Cron expression to run a job every 30 secondes */
     public void retrieveSubscriptions() {
         for (Subscription sub: subscriptionRepository.findDistinctOrderByEndDateAsc()) {
             Skier   aSkier = skierRepository.findBySubscription(sub);
@@ -70,11 +70,20 @@ public class SubscriptionServicesImpl implements ISubscriptionServices{
     }
 
    // @Scheduled(cron = "* 0 9 1 * *") /* Cron expression to run a job every month at 9am */
-    @Scheduled(cron = "*/30 * * * * *") /* Cron expression to run a job every 30 secondes */
-    public void showMonthlyRecurringRevenue() {
-        Float revenue = subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.MONTHLY)
-                + subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.SEMESTRIEL)/6
-                + subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.ANNUAL)/12;
-        log.info("Monthly Revenue = " + revenue);
-    }
+   //@Scheduled(cron = "*/30 * * * * *") // Exécute la tâche toutes les 30 secondes
+   public void showMonthlyRecurringRevenue() {
+       Float monthlyRevenue = subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.MONTHLY);
+       Float semestrialRevenue = subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.SEMESTRIEL);
+       Float annualRevenue = subscriptionRepository.recurringRevenueByTypeSubEquals(TypeSubscription.ANNUAL);
+
+       // Vérification des valeurs nulles pour éviter NullPointerException
+       monthlyRevenue = (monthlyRevenue != null) ? monthlyRevenue : 0f;
+       semestrialRevenue = (semestrialRevenue != null) ? semestrialRevenue : 0f;
+       annualRevenue = (annualRevenue != null) ? annualRevenue : 0f;
+
+       Float revenue = monthlyRevenue + (semestrialRevenue / 6) + (annualRevenue / 12);
+
+       log.info("Monthly Revenue = " + revenue);
+   }
+
 }
